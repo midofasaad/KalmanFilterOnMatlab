@@ -1,0 +1,256 @@
+clear all
+close all;
+
+%% Accuracy Assessment: RMSE Calculation
+string= '50hz';
+num=3;
+load(strcat('Results_constant_noise_', string))
+
+% Measurment Signals 
+% Vds_meas=out.Vds_meas.data;
+% Id_meas=out.Id_meas.data; 
+   
+
+% Original Signals
+t=out.tout; 
+Vds_org=out.Vds_org.data;
+Id_org=out.Id_org.data; 
+Rds_org=out.Rds_org.data;
+Tj_org=out.Tj_original.data;
+
+% Voltage Estimates
+Vds_KF_Single=out.Vds_KF_Single.data; 
+Vds_KF_Seperate=out.Vds_KF_Seperate.data; 
+Vds_RGN=out.Vds_RGN.data;
+
+% Current Estimates 
+Id_KF_Single=out.Id_KF_Single.data; 
+Id_KF_Seperate=out.Id_KF_Seperate.data; 
+Id_RGN=out.Id_RGN.data;
+
+% Resistance Estimates 
+Rds_KF_Single=out.Rds_KF_Single.data; 
+Rds_KF_Seperate=out.Rds_KF_Seperate.data; 
+Rds_RGN=out.Rds_RGN.data;
+
+% Temperature Estimates 
+Tj_KF_Single=out.Tj_KF_Single.data; 
+Tj_KF_Seperate=out.Tj_KF_Seperate.data;
+Tj_RGN=out.Tj_RGN.data;
+
+%% RMSE Calculation 
+start=5000;
+finish=7500; 
+
+% Voltage RMSE
+RMSE_Vds_KF_Single=RMSE(Vds_org,Vds_KF_Single,start,finish);
+RMSE_Vds_KF_Seperate=RMSE(Vds_org,Vds_KF_Seperate,start,finish);
+RMSE_Vds_RGN=RMSE(Vds_org,Vds_RGN,start,finish);
+
+% Current RMSE
+RMSE_Id_KF_Single=RMSE(Id_org,Id_KF_Single,start,finish);
+RMSE_Id_KF_Seperate=RMSE(Id_org,Id_KF_Seperate,start,finish);
+RMSE_Id_RGN=RMSE(Id_org,Id_RGN,start,finish);
+
+% Resistance RMSE
+RMSE_Rds_KF_Single=RMSE(Rds_org,Rds_KF_Single,start,finish);
+RMSE_Rds_KF_Seperate=RMSE(Rds_org,Rds_KF_Seperate,start,finish);
+RMSE_Rds_RGN=RMSE(Rds_org,Rds_RGN,start,finish);
+
+% Voltage RMSE
+RMSE_Tj_KF_Single=RMSE(Tj_org,Tj_KF_Single,start,finish);
+RMSE_Tj_KF_Seperate=RMSE(Tj_org,Tj_KF_Seperate,start,finish);
+RMSE_Tj_RGN=RMSE(Tj_org,Tj_RGN,start,finish);
+
+
+
+%% Plotting RMSE 
+
+% Voltage RMSE
+figure(1);
+plot(t(start:finish),RMSE_Vds_KF_Single,'blue');
+hold on 
+plot(t(start:finish),RMSE_Vds_KF_Seperate, 'black');
+plot(t(start:finish),RMSE_Vds_RGN,'green');
+legend({'Single KF Estimate','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$\sigma_{V_{ds}}[V]$','FontSize',14, 'Interpreter','latex');
+title('Drain-Source Voltage RMSE','FontSize',18);
+if num==1
+ saveas(figure(1),'Constant_Noise/Voltage_RMSE.eps','epsc');
+end
+if num==2
+ saveas(figure(1),'Dynamic_Noise/Voltage_RMSE_dynamic.eps','epsc');
+end
+
+% Current RMSE
+figure(2);
+plot(t(start:finish),RMSE_Id_KF_Single,'blue');
+hold on 
+plot(t(start:finish),RMSE_Id_KF_Seperate, 'black');
+plot(t(start:finish),RMSE_Id_RGN,'green');
+legend({'Single KF Estimate','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$\sigma_{I_d[A]}$','FontSize',14, 'Interpreter','latex');
+title('Drain Current RMSE','FontSize',18);
+if num==1
+ saveas(figure(2),'Constant_Noise/Current_RMSE.eps','epsc');
+end
+if num==2
+ saveas(figure(2),'Dynamic_Noise/Current_RMSE_dynamic.eps','epsc');
+end
+ % Resistance RMSE
+figure(3);
+plot(t(start:finish),RMSE_Rds_KF_Single,'blue');
+hold on 
+plot(t(start:finish),RMSE_Rds_KF_Seperate, 'black');
+plot(t(start:finish),RMSE_Rds_RGN,'green');
+legend({'Single KF Estimate','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$\sigma_{R_{dson}}[m\Omega]$','FontSize',14, 'Interpreter','latex');
+title('On-State Resistance RMSE','FontSize',18);
+if num==1
+ saveas(figure(3),'Constant_Noise/Resistance_RMSE.eps','epsc');
+end
+if num==2
+saveas(figure(3),'Dynamic_Noise/Resistance_RMSE_dynamic.eps','epsc');
+end
+
+% Junction Temperature RMSE
+figure(4);
+plot(t(start:finish),RMSE_Tj_KF_Single,'blue');
+hold on 
+plot(t(start:finish),RMSE_Tj_KF_Seperate, 'black');
+plot(t(start:finish),RMSE_Tj_RGN,'green');
+legend({'Single KF Estimate','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$\sigma_{T_j}[^{\circ}C]$','FontSize',14, 'Interpreter','latex');
+title('Junction Temperature RMSE','FontSize',18);
+if num==1
+    saveas(figure(4),'Constant_Noise/temperature_RMSE.eps','epsc');
+end
+if num==2
+    saveas(figure(4),'Dynamic_Noise/temperature_RMSE_dynamic.eps','epsc');
+else
+    saveas(figure(4),strcat('Robustness/temperature_RMSE',string,'.eps'),'epsc');
+end 
+
+%% Plotting Estimates
+
+% Voltage Estimate 
+figure(5);
+plot(t,Vds_KF_Single,'blue');
+hold on 
+plot(t,Vds_org,'red');
+plot(t,Vds_KF_Seperate, 'black');
+plot(t,Vds_RGN,'green');
+legend({'Single KF Estimate','True Signal','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$V_{ds}[V]$','FontSize',14, 'Interpreter','latex');
+title('Drain-Source Voltage Estimation','FontSize',18);
+
+if num==1
+ saveas(figure(5),'Constant_Noise/Voltage_Estimate.eps','epsc');
+end
+if num==2
+ saveas(figure(5),'Dynamic_Noise/Voltage_Estimate_dynamic.eps','epsc');
+end
+
+% Current Estimate
+figure(6);
+plot(t,Id_KF_Single,'blue');
+hold on 
+plot(t,Id_org,'red');
+plot(t,Id_KF_Seperate, 'black');
+plot(t,Id_RGN,'green');
+legend({'Single KF Estimate','True Signal','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$I_d[A]$','FontSize',14, 'Interpreter','latex');
+title('Drain Current Estimation','FontSize',18);
+if num==1
+ saveas(figure(6),'Constant_Noise/Current_Estimate.eps','epsc');
+end
+if num==2 
+ saveas(figure(6),'Dynamic_Noise/Current_Estimate_dynamic.eps','epsc');
+end
+% Resistance Estimate
+figure(7);
+plot(t,Rds_KF_Single,'blue');
+hold on 
+plot(t,Rds_org, 'red');
+plot(t,Rds_KF_Seperate, 'black');
+plot(t,Rds_RGN,'green');
+legend({'Single KF Estimate','True Signal','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$R_{dson}[m\Omega]$','FontSize',14, 'Interpreter','latex');
+title('On-State Resistance Estimation','FontSize',18);
+if num==1
+saveas(figure(7),'Constant_Noise/Resistance_Estimate.eps','epsc');
+end
+if num==2 
+saveas(figure(7),'Dynamic_Noise/Resistance_Estimate_dynamic.eps','epsc');
+else
+saveas(figure(7),strcat('Robustness/Resistance_Estimate',string,'.eps'),'epsc')
+end
+% Junction Temperature Estimate
+figure(8);
+plot(t(start:finish),Tj_KF_Single(start:finish),'blue');
+hold on 
+plot(t(start:finish),Tj_org(start:finish), 'red');
+plot(t(start:finish),Tj_KF_Seperate(start:finish), 'black');
+plot(t(start:finish),Tj_RGN(start:finish),'green');
+legend({'Single KF Estimate','True Signal','Seperate KF Estimate','RGN Estimate'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$T_j[C^{\circ}]$','FontSize',14, 'Interpreter','latex');
+title('Junction Temperature Estimation','FontSize',18);
+if num==1
+ saveas(figure(8),'Constant_Noise/temperature_Estimate.eps','epsc');
+end
+if num==2
+saveas(figure(8),'Dynamic_Noise/temperature_Estimate_dynamic.eps','epsc');
+else
+saveas(figure(8),strcat('Robustness/temperature_Estimate',string,'.eps'),'epsc')
+end
+%% Plotting Measurements vs Original Signals
+% Voltage Experiment
+figure(9);
+plot(t,Vds_meas,'Color','#7E2F8E');
+hold on 
+plot(t,Vds_org,'red');
+legend({'Measurement','True Signal'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$V_{ds}[V]$','FontSize',14, 'Interpreter','latex');
+title('Drain-Source Voltage Experiment','FontSize',18);
+
+if num==1
+ saveas(figure(9),'Constant_Noise/Experiment_voltage.eps','epsc');
+end
+if num==2
+ saveas(figure(9),'Dynamic_Noise/Voltage_Exper_dynamic.eps','epsc');
+end
+
+% Current Experiment
+figure(10);
+plot(t,Id_meas,'Color','#7E2F8E');
+hold on 
+plot(t,Id_org,'red');
+legend({'Measurement','True Signal'},'FontSize',14,'Interpreter','latex','Location','best');
+grid on ; 
+xlabel('t[$s$]','FontSize',14, 'Interpreter','latex');
+ylabel('$I_d[A]$','FontSize',14, 'Interpreter','latex');
+title('Drain Current Experiment','FontSize',18);
+if num==1
+ saveas(figure(10),'Constant_Noise/Experiment_Current.eps','epsc');
+end
+if num==2 
+ saveas(figure(10),'Dynamic_Noise/Current_Exper_dynamic.eps','epsc');
+end
